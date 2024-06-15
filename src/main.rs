@@ -30,6 +30,8 @@ use crate::cell::{Player, VectorI2};
 
 mod cell;
 mod math;
+mod input;
+mod map;
 
 
 // Import the sprites in to this static. This holds the sprite
@@ -66,7 +68,7 @@ fn main(mut gba: agb::Gba) -> ! {
     // Get the object manager
     let object = gba.display.object.get_managed();
     let vblank = agb::interrupt::VBlank::get();
-    let mut input = agb::input::ButtonController::new();
+    let mut input = ButtonController::new();
 
     // Place this at some point on the screen, (50, 50) for example
     let mut player_sprite = object
@@ -74,57 +76,16 @@ fn main(mut gba: agb::Gba) -> ! {
 
     let mut player = Player::new(player_sprite, WALL_MAP);
 
-    player.object.show();
-
     object.commit();
 
-    let walls = gen_walls(&object);
-
-    let mut x_velocity = 0;
-    let mut y_velocity = 0;
+    let walls = map::gen_walls(&object);
 
     loop {
         // if w a s d (up, left, down, right) is pressed, move the player
-        check_movement(&mut input, &mut player);
+        input::check_movement(&mut input, &mut player);
 
         // Wait for vblank, then commit the objects to the screen
         agb::display::busy_wait_for_vblank();
         object.commit();
     }
-}
-
-fn check_movement(input: &mut ButtonController, player: &mut Player) {
-    input.update();
-    if input.is_just_pressed(Button::LEFT) {
-        player.move_left();
-    }
-    if input.is_just_pressed(Button::RIGHT) {
-        player.move_right();
-    }
-    if input.is_just_pressed(Button::UP) {
-        player.move_up();
-    }
-    if input.is_just_pressed(Button::DOWN) {
-        player.move_down();
-    }
-}
-
-fn gen_walls<'a>(object: &'a OamManaged<'a>) -> Vec<Object<'a>>{
-
-    // based on the WALL_MAP matrix, generate the walls
-    let mut walls: Vec<Object> = Vec::new();
-    for (y, row) in WALL_MAP.iter().enumerate() {
-        for (x, cell) in row.iter().enumerate() {
-            if *cell == 1 {
-                let mut wall = object.object_sprite(WALL.sprite(0));
-                wall
-                    .set_x(math::i_to_x(x as u16))
-                    .set_y(math::j_to_y(y as u16))
-                    .show();
-                walls.push(wall);
-            }
-        }
-    }
-
-    return walls;
 }

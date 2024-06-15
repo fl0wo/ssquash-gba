@@ -19,7 +19,6 @@ pub struct Player<'a> {
 
 impl Player<'_> {
 
-    // constructor
     pub(crate) fn new(object: Object,map: [[u8; 15]; 10]) -> Player {
         let mut x = Player {
             object,
@@ -31,10 +30,12 @@ impl Player<'_> {
                 f: 0,
                 s: 0
             },
+            // TODO: are you sure this is the right way to do this?
             map: map
         };
 
         x.update_pos();
+        x.object.show();
 
         x
     }
