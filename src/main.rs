@@ -75,10 +75,9 @@ fn main(mut gba: agb::Gba) -> ! {
         .object_sprite(BALL.sprite(0));
 
     let mut player = Player::new(player_sprite, WALL_MAP);
+    let walls = map::gen_walls(&object);
 
     object.commit();
-
-    let walls = map::gen_walls(&object);
 
     loop {
         // if w a s d (up, left, down, right) is pressed, move the player

@@ -30,7 +30,7 @@ impl Player<'_> {
             object,
             coordinates: VectorI2 {
                 f: 1,
-                s: 1
+                s: 2
             },
             direction: VectorI2 {
                 f: 0,
