@@ -1,5 +1,6 @@
 use agb::display::object::Object;
 use crate::{math};
+use crate::math::get_cell_of_map_row;
 
 
 pub struct VectorI2 {
@@ -19,12 +20,12 @@ pub struct Player<'a> {
     pub(crate) object: Object<'a>,
     pub(crate) coordinates: VectorI2,
     pub(crate) direction: VectorI2,
-    map: [[u8; 15]; 10],
+    map: [u16; 10],
 }
 
 impl Player<'_> {
 
-    pub(crate) fn new(object: Object,map: [[u8; 15]; 10]) -> Player {
+    pub(crate) fn new(object: Object,map: [u16; 10]) -> Player {
         let mut x = Player {
             object,
             coordinates: VectorI2 {
@@ -80,7 +81,7 @@ impl Player<'_> {
     }
 
     fn is_wall(&mut self, row:i16,col: i16) -> bool {
-        self.map[row as usize][col as usize] != 0
+        get_cell_of_map_row(&self.map[row as usize], col) == 1
     }
 
     pub(crate) fn move_left(&mut self) {

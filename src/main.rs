@@ -50,17 +50,17 @@ static PLAYER_ID: u8 = 2;
 
 static SIZE_CELL: i32 = 16;
 
-static WALL_MAP: [[u8; 15]; 10] = [
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+static WALL_MAP: [u16; 10] = [
+    32767, // 111111111111111 in binary or can save the number as 0xFFFF
+    16385, // 100000000000001 in binary
+    16385, // ...
+    16385,
+    16385,
+    16385,
+    16385,
+    16385,
+    16385,
+    32765, // 111111111111101 in binary
 ];
 
 #[agb::entry]
@@ -71,7 +71,7 @@ fn main(mut gba: agb::Gba) -> ! {
     let mut input = ButtonController::new();
 
     // Place this at some point on the screen, (50, 50) for example
-    let mut player_sprite = object
+    let player_sprite = object
         .object_sprite(BALL.sprite(0));
 
     let mut player = Player::new(player_sprite, WALL_MAP);
