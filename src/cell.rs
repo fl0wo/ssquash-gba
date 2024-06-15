@@ -3,6 +3,11 @@ use crate::{math};
 
 
 pub struct VectorI2 {
+    pub(crate) f: i16,
+    pub(crate) s: i16,
+}
+
+pub struct VectorU2 {
     pub(crate) f: u16,
     pub(crate) s: u16,
 }
@@ -14,7 +19,7 @@ pub struct Player<'a> {
     pub(crate) object: Object<'a>,
     pub(crate) coordinates: VectorI2,
     pub(crate) direction: VectorI2,
-    map: [[u8; 15]; 10]
+    map: [[u8; 15]; 10],
 }
 
 impl Player<'_> {
@@ -40,50 +45,93 @@ impl Player<'_> {
         x
     }
 
-    pub(crate) fn row(&self) -> u16 {
+    pub(crate) fn row(&self) -> i16 {
         self.coordinates.f
     }
 
-    pub(crate) fn column(&self) -> u16 {
+    pub(crate) fn column(&self) -> i16 {
         self.coordinates.s
     }
 
     fn update_pos(&mut self) {
-        self.object.set_x(math::j_to_y(self.column()));
-        self.object.set_y(math::i_to_x(self.row()));
+        self.object.set_x(math::j_to_y(self.column()) as u16);
+        self.object.set_y(math::i_to_x(self.row())as u16);
     }
 
-    fn set_row(&mut self, row: u16) {
-        if(self.map[row as usize][self.column() as usize] != 0) {
+    fn set_row(&mut self, row: i16) {
+        if(self.is_wall(row ,self.column())) {
+            // reset direction to 0
+            self.reset_direction();
             return;
         }
-
+        self.direction.f = row-self.row();
         self.coordinates.f = row;
         self.update_pos()
     }
 
-    fn set_column(&mut self, col: u16) {
-        if(self.map[self.row() as usize][col as usize] != 0) {
+    fn set_column(&mut self, col: i16) {
+        if(self.is_wall(self.row(),col)) {
+            self.reset_direction();
             return;
         }
-
+        self.direction.s = col-self.column();
         self.coordinates.s = col;
         self.update_pos();
     }
 
+    fn is_wall(&mut self, row:i16,col: i16) -> bool {
+        self.map[row as usize][col as usize] != 0
+    }
+
     pub(crate) fn move_left(&mut self) {
+        if(self.is_moving()) {
+            return;
+        }
         self.set_column(self.column() - 1);
     }
 
     pub(crate) fn move_right(&mut self) {
+        if(self.is_moving()) {
+            return;
+        }
         self.set_column(self.column() + 1);
     }
 
     pub(crate) fn move_up(&mut self) {
+        if(self.is_moving()) {
+            return;
+        }
         self.set_row(self.row() - 1);
     }
 
     pub(crate) fn move_down(&mut self) {
+        if(self.is_moving()) {
+            return;
+        }
         self.set_row(self.row() + 1);
+    }
+
+    pub(crate) fn apply_direction(&mut self) {
+        if(self.direction.f == 0 && self.direction.s == 0) {
+            return;
+        }
+
+        // move the player in the direction
+        self.set_row(self.row() + (self.direction.f));
+        self.set_column(self.column() + (self.direction.s));
+    }
+
+    /**
+    Stops the player from moving, allowing the player to move in a different direction.
+    */
+    fn reset_direction(&mut self) {
+        self.direction = VectorI2 {
+            f: 0,
+            s: 0
+        }
+    }
+
+    fn is_moving(&self) -> bool {
+        self.direction.f != 0 || self.direction.s != 0
     }
 }

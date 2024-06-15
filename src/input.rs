@@ -15,4 +15,6 @@ pub fn check_movement(input: &mut ButtonController, player: &mut Player) {
     if input.is_pressed(Button::DOWN) {
         player.move_down();
     }
+
+    player.apply_direction();
 }

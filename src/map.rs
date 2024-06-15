@@ -11,8 +11,8 @@ pub fn gen_walls<'a>(object: &'a OamManaged<'a>) -> Vec<Object<'a>>{
             if *cell == 1 {
                 let mut wall = object.object_sprite(WALL.sprite(0));
                 wall
-                    .set_x(math::i_to_x(x as u16))
-                    .set_y(math::j_to_y(y as u16))
+                    .set_x(math::i_to_x(x as i16) as u16)
+                    .set_y(math::j_to_y(y as i16) as u16)
                     .show();
                 walls.push(wall);
             }
