@@ -25,6 +25,7 @@ use agb::{
     display::tiled::{TiledMap, TileFormat, TileSet, TileSetting},
     input::Button,
 };
+use agb::input::ButtonController;
 use crate::cell::{Player, VectorI2};
 
 mod cell;
@@ -71,7 +72,7 @@ fn main(mut gba: agb::Gba) -> ! {
     let mut player_sprite = object
         .object_sprite(BALL.sprite(0));
 
-    let mut player = Player::new(player_sprite);
+    let mut player = Player::new(player_sprite, WALL_MAP);
 
     player.object.show();
 
@@ -82,27 +83,29 @@ fn main(mut gba: agb::Gba) -> ! {
     let mut x_velocity = 0;
     let mut y_velocity = 0;
 
-
     loop {
-        input.update();
-
         // if w a s d (up, left, down, right) is pressed, move the player
-        if input.is_just_pressed(Button::LEFT) {
-            player.move_left();
-        }
-        if input.is_just_pressed(Button::RIGHT) {
-            player.move_right();
-        }
-        if input.is_just_pressed(Button::UP) {
-            player.move_up();
-        }
-        if input.is_just_pressed(Button::DOWN) {
-            player.move_down();
-        }
+        check_movement(&mut input, &mut player);
 
         // Wait for vblank, then commit the objects to the screen
         agb::display::busy_wait_for_vblank();
         object.commit();
+    }
+}
+
+fn check_movement(input: &mut ButtonController, player: &mut Player) {
+    input.update();
+    if input.is_just_pressed(Button::LEFT) {
+        player.move_left();
+    }
+    if input.is_just_pressed(Button::RIGHT) {
+        player.move_right();
+    }
+    if input.is_just_pressed(Button::UP) {
+        player.move_up();
+    }
+    if input.is_just_pressed(Button::DOWN) {
+        player.move_down();
     }
 }
 
